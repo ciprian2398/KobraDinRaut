@@ -7,14 +7,14 @@ public class DrawPanel extends JPanel {
 
     private final Game game;
 
-    public DrawPanel() {
-        this.game = new Game();
+    public DrawPanel(Game game) {
+        this.game = game;
     }
 
     @Override
     public void paint(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g.create();
-        this.game.nextFrame(graphics2D);
+        this.game.draw(graphics2D);
         repaint();
     }
 }

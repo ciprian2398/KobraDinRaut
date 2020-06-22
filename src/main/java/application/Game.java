@@ -1,37 +1,48 @@
 package application;
 
+import application.entity.AppleSupplier;
+import application.entity.GraphicAdapter;
+import application.entity.Snake;
+import application.entity.SnakeDirectionSupplier;
+
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
-public class Game {
-    int gridSize = 5;
-    int gameMap[][] = new int[gridSize][gridSize];
+public class Game implements Runnable, GraphicAdapter {
 
-    void blackMap() {
-        for (int i = 0; i < gridSize - 1; i++) {
-            for (int j = 0; j < gridSize - 1; j++) {
-                gameMap[i][j] = 1;
-            }
+    AppleSupplier appleSupplier = new AppleSupplier();
+    SnakeDirectionSupplier directionSupplier = new SnakeDirectionSupplier();
+    Snake snake = new Snake(appleSupplier);
+
+    public Game() {
+        new Thread(this).start();
+    }
+
+    private void sleep200() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    void paintMap(Graphics2D graphics2D) {
-        for (int i = 0; i < gridSize - 1; i++) {
-            for (int j = 0; j < gridSize - 1; j++) {
-                int x = i * 400 / gridSize;
-                int y = j * 400 / gridSize;
-                int w = 400 / gridSize;
-                int h = 400 / gridSize;
-                graphics2D.fillRect(x, y, w, h);
-            }
+    public void processEvent(KeyEvent e) {
+        directionSupplier.changeDirection(Utils.mapToDirection(e));
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            snake.step(directionSupplier.get());
+            sleep200();
         }
     }
 
-    public void nextFrame(Graphics2D graphics2D) {
-
-        graphics2D.setColor(Color.BLACK);
-        graphics2D.drawLine(0, 0, 400, 400);
-
-        paintMap(graphics2D);
-
+    @Override
+    public void draw(Graphics2D graphics2D) {
+        snake.draw(graphics2D);
+        appleSupplier.get().draw(graphics2D);
     }
+
+
 }
